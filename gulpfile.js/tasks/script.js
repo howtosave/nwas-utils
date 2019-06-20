@@ -30,7 +30,7 @@ const task = (done) => {
     ], {
       cwd,
     }); */
-    const child = spawn(`echo ${cmds} | ssh ${server} "cat > /tmp/script ; bash /tmp/script"`,
+    const child = spawn(`echo ${cmds} | ssh ${server} "cat > /tmp/script && /bin/bash /tmp/script"`,
       { 
         cwd, 
         shell: true,
