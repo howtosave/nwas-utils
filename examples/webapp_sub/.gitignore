@@ -13,4 +13,4 @@ tmp/
 temp-*/
 log/
 test-results/
-*.tar
+release.tar
