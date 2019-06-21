@@ -1,18 +1,19 @@
 
 const path = require('path');
 
-const {
-  when_git_dirty_all, git_checkout_release, git_add_all_and_commit, when_not_release_branch
-} = require('./script_cmds');
-
 const _LOCAL = true;
 
 const svcUser = !_LOCAL ? 'jcsvc00' : 'svc00';
 const devUser = !_LOCAL ? 'jcdev00' : 'peterk';
 const remote = !_LOCAL ? '211.218.126.148"' : '127.0.0.1';
 
-const repoDir = `/home/${devUser}/example-release`;
-const svcDir = `/home/${svcUser}/example-service`;
+const repoDir = `/home/${devUser}/webapp-release`;
+const svcDir = `/home/${svcUser}/webapp-service`;
+
+const nginxBaseDocDir = `/home/${svcUser}/webapp-service/current/public`;
+const nginxBaseLogDir = `/home/${svcUser}/webapp-service/log/nginx`;
+
+const outputFile = 'release-webapp.tar';
 
 module.exports = {
   svcUser,
@@ -37,7 +38,7 @@ module.exports = {
         'ecosystem.config.js',
       ]
     },
-    output: 'release.tar',
+    output: outputFile,
   },
 
   scp: {
@@ -46,8 +47,13 @@ module.exports = {
     // make sure the dest directory exists on the remote
     dest: '/tmp',
     files: [
-      'release.tar',
+      outputFile,
     ]
+  },
+
+  nginx: {
+    docDir: `${nginxBaseDocDir}`,
+    logDir: `${nginxBaseLogDir}`,
   },
 
   script: {
@@ -57,7 +63,7 @@ module.exports = {
 `#!/bin/bash    
 # go to repoDir
 cd ${repoDir}
-echo $PWD
+
 # when git is dirty, exit with 1
 if [ "$(git status -s)" != "" ]; then
   echo git is DIRTY !!!
@@ -66,7 +72,7 @@ if [ "$(git status -s)" != "" ]; then
 fi
 # untar
 echo --- untar release.tar...
-tar -xvf /tmp/release.tar -C ./
+tar -xvf /tmp/${outputFile} -C ./
 
 # git commit
 echo --- release checkout...
