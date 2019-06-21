@@ -15,6 +15,7 @@ const nginxBaseDocDir = `/home/${svcUser}/webapp_sub-service/current/public`;
 const nginxBaseLogDir = `/home/${svcUser}/webapp_sub-service/log/nginx`;
 
 const outputFile = 'release-webapp_sub.tar';
+const rootDir = path.join(__dirname, '..');
 
 module.exports = {
   svcUser,
@@ -26,7 +27,7 @@ module.exports = {
   tar: {
     src: {
       // absolute path of project directory
-      baseDir: path.join(__dirname, '..'),
+      baseDir: rootDir,
       files: [
         'src',
         'public',
@@ -40,22 +41,19 @@ module.exports = {
         'ecosystem.config.js',
       ]
     },
-    output: outputFile,
+    // absolute path for output file
+    output: path.join(rootDir, outputFile),
   },
 
   scp: {
+    // absolute path to be uploaded
+    files: [
+      path.join(rootDir, outputFile),
+    ],
     server: `${devUser}@${remote}`,
     // *IMPORTANT*
     // make sure the dest directory exists on the remote
     dest: '/tmp',
-    files: [
-      outputFile,
-    ]
-  },
-
-  nginx: {
-    docDir: `${nginxBaseDocDir}`,
-    logDir: `${nginxBaseLogDir}`,
   },
 
   script: {

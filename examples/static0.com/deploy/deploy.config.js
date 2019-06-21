@@ -14,6 +14,7 @@ const nginxBaseDocDir = `/home/${svcUser}/static0-service/current/public`;
 const nginxBaseLogDir = `/home/${svcUser}/static0-service/log/nginx`;
 
 const outputFile = 'release-static0.tar';
+const rootDir = path.join(__dirname, '..');
 
 module.exports = {
   svcUser,
@@ -25,27 +26,24 @@ module.exports = {
   tar: {
     src: {
       // absolute path of project directory
-      baseDir: path.join(__dirname, '..'),
+      baseDir: rootDir,
       files: [
         'public',
         'deploy',
         'ecosystem.config.js',
       ]
     },
-    output: outputFile,
+    // absolute path for output file
+    output: path.join(rootDir, outputFile),
   },
 
   scp: {
+    // absolute path to be uploaded
+    files: [
+      path.join(rootDir, outputFile),
+    ],
     server: `${devUser}@${remote}`,
     dest: '/tmp',
-    files: [
-      outputFile,
-    ]
-  },
-
-  nginx: {
-    docDir: `${nginxBaseDocDir}`,
-    logDir: `${nginxBaseLogDir}`,
   },
 
   script: {
@@ -86,7 +84,6 @@ if [ ! -d "${svcDir}/production" ]; then
 fi
 
 pm2 deploy ecosystem.config.js production update --force
-
 
 #`,
   }

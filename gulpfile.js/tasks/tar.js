@@ -13,16 +13,13 @@ const cwd = process.cwd(); // console working directory
 
 const task = async (done) => {
   const args = parseArgs(process.argv);
+  d('argv:', process.argv);
   d('args:', args);
   const { config: configFile } = args;
   const { tar } = require(configFile);
   //d(tar);
-  const { src } = tar;
-  let { output } = tar;
+  const { src, output } = tar;
 
-  if (!output) output = 'output.tar';
-  if (!output.endsWith('.tar')) output += '.tar';
-  output = path.join(cwd, output);
   d('output: ', output);
 
   try {
