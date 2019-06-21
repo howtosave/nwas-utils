@@ -9,7 +9,7 @@ pushd ${NWAS_DEPLOY_DIR}
 #
 # do gulp tasks
 #
-
+function TMP() {
 # tar
 gulp tar --config $CONFIG_FILE
 if [ "$?" != "0" ]; then
@@ -29,7 +29,7 @@ if [ "$?" != "0" ]; then
   exit 1
 fi
 echo "========================================================="
-
+}
 # untar and commit
 gulp script --config $CONFIG_FILE
 if [ "$?" != "0" ]; then
