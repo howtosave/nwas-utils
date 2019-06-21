@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # path for nwas-deploy package
-NWAS_DEPLOY_DIR='../'
+NWAS_DEPLOY_DIR='../../'
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CONFIG_FILE=${SCRIPT_DIR}/deploy.config.js
@@ -40,6 +40,5 @@ if [ "$?" != "0" ]; then
   exit 1
 fi
 echo "========================================================="
-
 
 popd

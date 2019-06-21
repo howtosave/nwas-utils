@@ -11,9 +11,11 @@ const app = express();
 const port = process.env.APP_PORT;
 const host = '127.0.0.1';
 
-app.get('/app0', (req, res) => res.send('Hello World! from app0'));
+app.get('/app', (req, res) => res.send('Hello World! from app'));
 
-app.use(express.static('public'));
+if (process.env.NODE_ENV !== 'production') { // use nginx on production
+  app.use(express.static('public'));
+}
 
 // start server
 app.listen(port, host, () => {

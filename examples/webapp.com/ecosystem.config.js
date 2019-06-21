@@ -4,13 +4,15 @@
 const { svcUser, repoDir: repoUrl, svcDir } = require('./deploy/deploy.config');
 
 const prod_post_deploy = [
-  'ln -sfn $PWD ../../current',
+  'ln -sfn $PWD ../../current', // update current link
+  'ln -sfn .env.production .env', // update .env link
   'npm install --production',
   'pm2 startOrRestart ecosystem.config.js --env production'
 ];
 
 const dev_post_deploy = [
-  'ln -sfn $PWD ../../current',
+  'ln -sfn $PWD ../../current', // update current link
+  'ln -sfn .env.development .env', // update .env link
   'npm install --development',
   'pm2 startOrRestart ecosystem.config.js --env development'
 ];
@@ -22,7 +24,7 @@ module.exports = {
    */
   apps: [
     {
-      name: "example",
+      name: "webapp",
       script: "./src/server.js",
       instances: "1",
       exec_mode: "cluster",
@@ -33,8 +35,8 @@ module.exports = {
         NODE_ENV: "production"
       },
       log_date_format: 'YYYY-MM-DD HH:mm',
-      error_file: `${svcDir}/log/prod/pm2/example-error.log`,
-      out_file: `${svcDir}/log/prod/pm2/example-access.log`
+      error_file: `${svcDir}/log/prod/pm2/webapp-error.log`,
+      out_file: `${svcDir}/log/prod/pm2/webapp-access.log`
     }
   ],
 
