@@ -4,7 +4,10 @@
   "description": "utils for nwas deploy",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node node_modules/.bin/gulp"
+  },
+  "bin": {
+    "nwas-deploy": "node_modules/.bin/gulp"
   },
   "repository": {
     "type": "git",
@@ -16,6 +19,7 @@
   "dependencies": {
     "debug": "^4.1.1",
     "gulp": "^4.0.2",
+    "gulp-cli": "^2.2.0",
     "replace-in-file": "^4.1.0"
   }
 }
