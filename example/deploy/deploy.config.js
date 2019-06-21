@@ -9,7 +9,7 @@ const _LOCAL = true;
 
 const svcUser = !_LOCAL ? 'jcsvc00' : 'svc00';
 const devUser = !_LOCAL ? 'jcdev00' : 'peterk';
-const remote = !_LOCAL ? 'jcdev00@211.218.126.148"' : 'peterk@127.0.0.1';
+const remote = !_LOCAL ? '211.218.126.148"' : '127.0.0.1';
 
 const repoDir = `/home/${devUser}/example-release`;
 const svcDir = `/home/${svcUser}/example-service`;
@@ -41,7 +41,7 @@ module.exports = {
   },
 
   scp: {
-    server: remote,
+    server: `${devUser}@${remote}`,
     // *IMPORTANT*
     // make sure the dest directory exists on the remote
     dest: '/tmp',
@@ -51,17 +51,16 @@ module.exports = {
   },
 
   script: {
-    server: remote,
+    server: `${devUser}@${remote}`,
     cwd: repoDir,
     cmds: 
-`
-#!/bin/bash    
+`#!/bin/bash    
 # go to repoDir
-pushd ${repoDir}
-
+cd ${repoDir}
+echo $PWD
 # when git is dirty, exit with 1
-if [[ -z $(git status -s) ]]; then
-  echo !!! git is DIRTY !!!
+if [ "$(git status -s)" != "" ]; then
+  echo git is DIRTY !!!
   echo *CLEANUP* first...
   exit 1
 fi
@@ -71,15 +70,24 @@ tar -xvf /tmp/release.tar -C ./
 
 # git commit
 echo --- release checkout...
-if [[ $(git symbolic-ref --short HEAD) != "release" ]]; then
+if [ $(git symbolic-ref --short HEAD) != "release" ]; then
   git checkout release
 fi
 echo --- commit new release...
-git add -A
-git commit -m "by nwas-deploy"
+if [ "$(git status -s)" != "" ]; then
+  git add -A
+  git commit -m "by nwas-deploy"
+fi
 
 # pm2 deploy
-#{ echo --- pm2 deploy...; pm2 deploy ecosystem.config.js production update --force; }
-`,
+echo --- pm2 deploy...
+if [ ! -d "${svcDir}/production" ]; then
+  pm2 deploy ecosystem.config.js production setup
+fi
+
+pm2 deploy ecosystem.config.js production update --force
+
+
+#`,
   }
 };

@@ -4,16 +4,15 @@
 const { svcUser, repoDir: repoUrl, svcDir } = require('./deploy/deploy.config');
 
 const prod_post_deploy = [
-  // current link directory를 생성한다. (nginx와 같은 다른 설정 파일에서 사용됨)
-  'ln -sfn $PWD/../current ../../current',
+  'ln -sfn $PWD ../../current',
   'npm install --production',
-  'pm2 startOrRestart ecosystem.nitrogen.config.js --env production'
+  'pm2 startOrRestart ecosystem.config.js --env production'
 ];
 
 const dev_post_deploy = [
-  'ln -sfn $PWD/../current ../../current',
+  'ln -sfn $PWD ../../current',
   'npm install --development',
-  'pm2 startOrRestart ecosystem.nitrogen.config.js --env development'
+  'pm2 startOrRestart ecosystem.config.js --env development'
 ];
 
 module.exports = {
@@ -34,8 +33,8 @@ module.exports = {
         NODE_ENV: "production"
       },
       log_date_format: 'YYYY-MM-DD HH:mm',
-      error_file: `${svcDir}/log/prod/pm2/nitrogen-error.log`,
-      out_file: `${svcDir}/log/prod/pm2/nitrogen-access.log`
+      error_file: `${svcDir}/log/prod/pm2/example-error.log`,
+      out_file: `${svcDir}/log/prod/pm2/example-access.log`
     }
   ],
 

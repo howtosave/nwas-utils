@@ -20,7 +20,7 @@ const task = (done) => {
   d(`script on ${server}:${rcwd}`);
 
   //const cmdsTxt = `'cd ${rcwd} && ${cmds.join(' && ')}'`;
-  //d(`script: ${cmdsTxt}`);
+  //d(`${cmds}`);
 
   try {
     /*
@@ -31,9 +31,9 @@ const task = (done) => {
       cwd,
     }); */
     const child = spawn(`echo ${cmds} | ssh ${server} "cat > /tmp/script && /bin/bash /tmp/script"`,
-      { 
+      {
         cwd, 
-        shell: true,
+        shell: '/bin/bash',
         stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
       });
 
@@ -44,8 +44,8 @@ const task = (done) => {
     child.stderr.on('data', (data) => {
       // TODO:
       // DO NOT EXIT PROCESS WHEN THROWING EXCEPTION WHILE INPUT PASSWORD
-      console.error(`ERR: ${data}`);
-      throw new Error(`${data}`);
+      console.error(`! ${data}`);
+      //throw new Error(`${data}`);
     });
 
     // event handler
