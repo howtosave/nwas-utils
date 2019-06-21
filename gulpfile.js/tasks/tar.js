@@ -23,13 +23,28 @@ const task = async (done) => {
   d('output: ', output);
 
   try {
+    const excludes = [];
+    if (src.excludes) {
+      if (Array.isArray(src.excludes)) {
+        for (const excl of src.excludes) {
+          excludes.push('--exclude');
+          excludes.push(excl);
+        }
+      } else {
+        excludes.push('--exclude');
+        excludes.push(src.excludes);
+      }
+    }
+
     const child = spawn('tar', [
       '-cvf',
       output,
+      ...excludes,
       ...src.files,
     ], {
       cwd: src.baseDir,
     });
+
     // output log
     for await (const data of child.stdout) {
       console.log(`${data}`);
