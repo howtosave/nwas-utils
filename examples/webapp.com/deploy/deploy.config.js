@@ -8,10 +8,10 @@ const devUser = !_LOCAL ? 'jcdev00' : 'peterk';
 const remote = !_LOCAL ? '211.218.126.148"' : '127.0.0.1';
 
 const repoDir = `/home/${devUser}/webapp-release`;
-const svcDir = `/home/${svcUser}/webapp-service`;
+const svcDir = `/var/was//webapp-service`;
 
-const nginxBaseDocDir = `/home/${svcUser}/webapp-service/current/public`;
-const nginxBaseLogDir = `/home/${svcUser}/webapp-service/log/nginx`;
+const nginxBaseDocDir = `/var/was//webapp-service/current/public`;
+const nginxBaseLogDir = `/var/was//webapp-service/log/nginx`;
 
 const outputFile = 'release-webapp.tar';
 const rootDir = path.join(__dirname, '..');

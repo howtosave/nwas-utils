@@ -8,10 +8,10 @@ const devUser = !_LOCAL ? 'jcdev00' : 'peterk';
 const remote = !_LOCAL ? '211.218.126.148"' : '127.0.0.1';
 
 const repoDir = `/home/${devUser}/static1-release`;
-const svcDir = `/home/${svcUser}/static1-service`;
+const svcDir = `/var/was//static1-service`;
 
-const nginxBaseDocDir = `/home/${svcUser}/static1-service/current/public`;
-const nginxBaseLogDir = `/home/${svcUser}/static1-service/log/nginx`;
+const nginxBaseDocDir = `/var/was//static1-service/current/public`;
+const nginxBaseLogDir = `/var/was//static1-service/log/nginx`;
 
 const outputFile = 'release-static1.tar';
 const rootDir = path.join(__dirname, '..');
