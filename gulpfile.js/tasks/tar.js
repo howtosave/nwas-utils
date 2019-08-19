@@ -13,26 +13,29 @@ const cwd = process.cwd(); // console working directory
 
 const task = async (done) => {
   const args = parseArgs(process.argv);
-  d('argv:', process.argv);
-  d('args:', args);
-  const { config: configFile } = args;
-  const { tar } = require(configFile);
-  //d(tar);
-  const { src, output } = tar;
+  //d('argv:', process.argv);
+  //d('args:', args);
 
-  d('output: ', output);
+  const { config } = args;
+  const configFile = path.join(cwd, config);
+  const { tar } = require(configFile);
+  const { input, output } = tar;
+
+  const workingDir = path.dirname(configFile);
+
+  d('workingDir: ', workingDir);
 
   try {
     const excludes = [];
-    if (src.excludes) {
-      if (Array.isArray(src.excludes)) {
-        for (const excl of src.excludes) {
+    if (input.excludes) {
+      if (Array.isArray(input.excludes)) {
+        for (const excl of input.excludes) {
           excludes.push('--exclude');
           excludes.push(excl);
         }
       } else {
         excludes.push('--exclude');
-        excludes.push(src.excludes);
+        excludes.push(input.excludes);
       }
     }
 
@@ -40,9 +43,9 @@ const task = async (done) => {
       '-cvf',
       output,
       ...excludes,
-      ...src.files,
+      ...input.files,
     ], {
-      cwd: src.baseDir,
+      cwd: path.join(workingDir, input.baseDir),
     });
 
     // output log

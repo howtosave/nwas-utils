@@ -12,12 +12,13 @@ const cwd = process.cwd(); // console working directory
 
 const task = (done) => {
   const args = parseArgs(process.argv);
-  const { config: configFile } = args;
+  const { config } = args;
+  const configFile = path.join(cwd, config);
   const { script } = require(configFile);
   //d(tar);
-  const { server, cwd: rcwd, cmds } = script;
+  const { server, cmds } = script;
 
-  d(`script on ${server}:${rcwd}`);
+  d(`script on ${server}`);
 
   //const cmdsTxt = `'cd ${rcwd} && ${cmds.join(' && ')}'`;
   //d(`${cmds}`);
@@ -30,9 +31,8 @@ const task = (done) => {
     ], {
       cwd,
     }); */
-    const child = spawn(`echo ${cmds} | ssh ${server} "cat > /tmp/script && /bin/bash /tmp/script"`,
+    const child = spawn(`echo ${cmds} | ssh ${server} "cat > /tmp/nwas-script && /bin/bash /tmp/nwas-script"`,
       {
-        cwd, 
         shell: '/bin/bash',
         stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
       });

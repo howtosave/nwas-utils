@@ -1,0 +1,40 @@
+
+const path = require('path');
+const cd = __dirname; // config file directory
+const tarOutput = path.join(cd, 'output.tar');
+
+module.exports = {
+  tar: {
+    // absolute file path
+    output: tarOutput,
+
+    input: {
+      // base directory for the input files
+      baseDir: './',
+
+      // files to be tar
+      files: [
+      ],
+
+      // path pattern to be excluded
+      excludes: [
+        'package.json',
+        'ecosystem.config.js',
+      ]
+    }
+  },
+
+  scp: {
+    // absolute file paths to be uploaded
+    files: [
+      tarOutput,
+    ],
+
+    // destination server
+    server: `user@server.com`,
+
+    // destination folder on the server
+    // make sure the destination directory exists on the server
+    dest: '/tmp',
+  },
+}

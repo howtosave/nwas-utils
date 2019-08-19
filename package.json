@@ -4,14 +4,11 @@
   "description": "utils for nwas deploy",
   "main": "index.js",
   "scripts": {
-    "start": "node node_modules/.bin/gulp"
+    "start": "node_modules/.bin/gulp --series",
+    "parallel": "node_modules/.bin/gulp"
   },
   "bin": {
     "nwas-deploy": "node_modules/.bin/gulp"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@dl2ai.bitbucket.org:dl2ai/nwas-deploy.git"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +17,7 @@
     "debug": "^4.1.1",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.2.0",
+    "lodash": "^4.17.0",
     "replace-in-file": "^4.1.0"
   }
 }

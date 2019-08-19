@@ -6,3 +6,5 @@ process.env.DEBUG = '*';
 exports.tar = require('./tasks/tar');
 exports.scp = require('./tasks/scp');
 exports.script = require('./tasks/script');
+exports.mongo = require('./tasks/mongo');
+exports.generateConfig = require('./tasks/generate-config');

@@ -13,11 +13,13 @@ const cwd = process.cwd(); // console working directory
 
 const task = (done) => {
   const args = parseArgs(process.argv);
-  const { config: configFile } = args;
+  const { config } = args;
+  const configFile = path.join(cwd, config);
   const { scp } = require(configFile);
   const { server, dest, files } = scp;
 
-  d(`upload to ${server}:${dest}`, files.join(' '));
+  d(`upload to ${server}:${dest}`);
+  d('files: ', files.join(' '));
 
   let child;
   try {
