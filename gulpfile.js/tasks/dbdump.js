@@ -2,46 +2,35 @@
 /* eslint-disable import/no-dynamic-require */
 
 const path = require('path');
-const fs = require('fs');
 const { spawn } = require('child_process');
-const _ = require('lodash');
 
-const d = require('debug')('mongo');
+const d = require('debug')('dbdump');
 
 const parseArgs = require('../utils/parse_args');
+
 const cwd = process.cwd(); // console working directory
-const cd = __dirname;
-const templateFileName = 'mongo.template.js';
 
 const task = (done) => {
   const args = parseArgs(process.argv);
   const { config } = args;
   const configFile = path.join(cwd, config);
-  const { mongo } = require(configFile);
-  //d(tar);
-  const { server, dbhost, adminUser, adminPassword, dbname, addUsers } = mongo;
+  const { dbdump } = require(configFile);
 
-  d(`mongo on ${server} ${dbhost}/${dbname}`);
+  const { server, dbhost, user, password, dbname, collections, outDir } = dbdump;
 
-  const templateFilePath = path.join(cd, templateFileName);
-  const compiled = _.template(fs.readFileSync(templateFilePath));
-  d('addUsers', addUsers);
-  const shellScript = compiled({
-    dbhost,
-    adminUser,
-    adminPassword,
-    dbname,
-    addUsers: (addUsers && addUsers.enabled) ? addUsers.data : [],
-  });
+  d(`dbdump on ${server} ${dbhost}/${dbname} ${collections}`);
+
   try {
-    /*
-    const child = spawn('ssh', [
-      server,
-      cmdsTxt,
-    ], {
-      cwd,
-    }); */
-    const child = spawn(`echo '${shellScript}' | ssh ${server} "cat - > /tmp/nwas-mongo.js && /usr/bin/mongo --nodb /tmp/nwas-mongo.js"`,
+    let cmd = `mongodump --host ${dbhost} --db ${dbname} --out ${outDir}`;
+    if ( user ) cmd += ` -u ${user} -p ${password}`;
+    if ( collections && collections.length > 0 ) {
+      let cmds = [];
+      collections.forEach(function(col) {
+        cmds.push(`${cmd} --collection ${col}`);
+      });
+      cmd = cmds.join('\n');
+    }
+    const child = spawn(`echo '${cmd}' | ssh ${server} "cat - > /tmp/nwas-dbdump && /bin/bash /tmp/nwas-dbdump"`,
       {
         shell: '/bin/bash',
         stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
