@@ -31,7 +31,7 @@ const task = (done) => {
     ], {
       cwd,
     }); */
-    const child = spawn(`echo ${cmds} | ssh ${server} "cat > /tmp/nwas-script && /bin/bash /tmp/nwas-script"`,
+    const child = spawn(`echo '${cmds}' | ssh ${server} "cat > /tmp/nwas-script && /bin/bash /tmp/nwas-script"`,
       {
         shell: '/bin/bash',
         stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr

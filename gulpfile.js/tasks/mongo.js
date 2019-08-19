@@ -6,7 +6,7 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const _ = require('lodash');
 
-const d = require('debug')('script');
+const d = require('debug')('mongo');
 
 const parseArgs = require('../utils/parse_args');
 const cwd = process.cwd(); // console working directory
@@ -25,12 +25,13 @@ const task = (done) => {
 
   const templateFilePath = path.join(cd, templateFileName);
   const compiled = _.template(fs.readFileSync(templateFilePath));
+  d('addUsers', addUsers);
   const shellScript = compiled({
     dbhost,
     adminUser,
     adminPassword,
     dbname,
-    addUsers
+    addUsers: addUsers,
   });
   try {
     /*
@@ -40,8 +41,9 @@ const task = (done) => {
     ], {
       cwd,
     }); */
-    const child = spawn(`echo "${shellScript}" | ssh ${server} "cat - > /tmp/nwas-mongo.js"`,
+    const child = spawn(`echo '${shellScript}' | ssh ${server} "cat - > /tmp/nwas-mongo.js && /usr/bin/mongo --nodb /tmp/nwas-mongo.js"`,
       {
+        shell: '/bin/bash',
         stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
       });
 
