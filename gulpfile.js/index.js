@@ -8,4 +8,5 @@ exports.scp = require('./tasks/scp');
 exports.script = require('./tasks/script');
 exports.mongo = require('./tasks/mongo');
 exports.dbdump = require('./tasks/dbdump');
+exports.dbrestore = require('./tasks/dbrestore');
 exports.generateConfig = require('./tasks/generate-config');
