@@ -3,6 +3,7 @@
 
 const path = require('path');
 const { spawn } = require('child_process');
+const fs = require('fs');
 
 const d = require('debug')('dbrestore');
 
@@ -21,15 +22,31 @@ const task = (done) => {
   d(`dbrestore on ${server} ${dbhost}/${dbname} ${collections}`);
 
   try {
-    let cmd = `mongorestore --host ${dbhost} --db ${dbname} --dir ${inDir}`;
+    // input options:
+    // --objcheck : validate all objects before inserting
+    //
+    // restore options:
+    // --drop : drop each collection before import
+
+    let cmd = `mongorestore --host ${dbhost} --db ${dbname} --objcheck`;
     if ( user ) cmd += ` -u ${user} -p ${password}`;
     if ( collections && collections.length > 0 ) {
       let cmds = [];
       collections.forEach(function(col) {
-        cmds.push(`${cmd} --collection ${col}`);
+        // col[0]: collection name
+        // col[1]: restore options
+        const backupFilePath = path.join(inDir,`${col[0]}.bson`);
+        if (!fs.existsSync(backupFilePath)) return;
+
+        cmds.push(`${cmd} --collection ${col[0]} --dir ${backupFilePath} ${col[1]}`);
       });
       cmd = cmds.join('\n');
     }
+    else {
+      cmd += ` --dir ${inDir}`;
+    }
+
+    // run commands
     const child = spawn(`echo '${cmd}' | ssh ${server} "cat - > /tmp/nwas-dbrestore && /bin/bash /tmp/nwas-dbrestore"`,
       {
         shell: '/bin/bash',
