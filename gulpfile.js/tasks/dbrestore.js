@@ -17,9 +17,9 @@ const task = (done) => {
   const configFile = path.join(cwd, config);
   const { dbrestore } = require(configFile);
 
-  const { server, dbhost, user, password, dbname, collections, inDir } = dbrestore;
+  const { server, dbhost, user, password, dbname, upsertColls, restoreColls, dropColls, inDir } = dbrestore;
 
-  d(`dbrestore on ${server} ${dbhost}/${dbname} ${collections}`);
+  d(`dbrestore on ${server} ${dbhost}/${dbname} ${upsertColls} ${restoreColls}`);
 
   try {
     // input options:
@@ -27,26 +27,70 @@ const task = (done) => {
     //
     // restore options:
     // --drop : drop each collection before import
+    // 
+    // upsert options:
+    // --upsert: merge the records
 
-    let cmd = `mongorestore --host ${dbhost} --db ${dbname} --objcheck`;
-    if ( user ) cmd += ` -u ${user} -p ${password}`;
-    if ( collections && collections.length > 0 ) {
-      let cmds = [];
-      collections.forEach(function(col) {
-        // col[0]: collection name
-        // col[1]: restore options
-        const backupFilePath = path.join(inDir,`${col[0]}.bson`);
+    let cmds = [];
+    //
+    // collections to be restored
+    if ( restoreColls && restoreColls.length > 0 ) {
+      let cmd = `mongorestore --host ${dbhost} --db ${dbname} --objcheck`;
+      if ( user ) cmd += ` -u ${user} -p ${password}`;
+      restoreColls.forEach(function(coll) {
+        // coll[0]: collection name
+        // coll[1]: restore options
+        const backupFilePath = path.join(inDir,`${coll[0]}.bson`);
         if (!fs.existsSync(backupFilePath)) return;
 
-        cmds.push(`${cmd} --collection ${col[0]} --dir ${backupFilePath} ${col[1]}`);
+        cmds.push(`${cmd} --collection ${coll[0]} --dir ${backupFilePath} ${coll[1]}`);
       });
-      cmd = cmds.join('\n');
     }
-    else {
-      cmd += ` --dir ${inDir}`;
+
+    //
+    // collections to be updated or inserted
+    if ( upsertColls && upsertColls.length > 0 ) {
+      // TODO: implement upsert (eg. remove and insert the records)
+      let cmd = `mongorestore --host ${dbhost} --db ${dbname} --objcheck`;
+      if ( user ) cmd += ` -u ${user} -p ${password}`;
+      upsertColls.forEach(function(coll) {
+        // coll[0]: collection name
+        // coll[1]: import options
+        const backupFilePath = path.join(inDir,`${coll[0]}.bson`);
+        if (!fs.existsSync(backupFilePath)) return;
+
+        cmds.push(`${cmd} --collection ${coll[0]} --dir ${backupFilePath} ${coll[1]}`);
+        //cmds.push(`${cmd} --collection ${coll[0]} --dir ${backupFilePath}`);
+      });
+    }
+
+    //
+    // collections to be droped
+    if ( dropColls && dropColls.length > 0 ) {
+      // TODO: implement upsert (eg. remove and insert the records)
+      let cmd = `mongorestore --host ${dbhost} --db ${dbname} --drop`;
+      if ( user ) cmd += ` -u ${user} -p ${password}`;
+      dropColls.forEach(function(coll) {
+        // coll[0]: collection name
+        // coll[1]: import options
+        const backupFilePath = path.join(inDir,`empty.bson`);
+        if (!fs.existsSync(backupFilePath)) return;
+
+        cmds.push(`${cmd} --collection ${coll[0]} ${coll[1]} --dir ${backupFilePath}`);
+      });
+    }
+
+    //
+    // collections to be droped
+
+    if (cmds.length === 0) {
+      let cmd = `mongorestore --host ${dbhost} --db ${dbname} --dir ${inDir} --objcheck`;
+      if ( user ) cmd += ` -u ${user} -p ${password}`;
+      cmds.push[cmd];
     }
 
     // run commands
+    let cmd = cmds.join('\n');
     const child = spawn(`echo '${cmd}' | ssh ${server} "cat - > /tmp/nwas-dbrestore && /bin/bash /tmp/nwas-dbrestore"`,
       {
         shell: '/bin/bash',
