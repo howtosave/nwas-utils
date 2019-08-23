@@ -7,8 +7,8 @@ module.exports = {
   tasks: {
     'staging': {
       series: true,
-      //tar: 'tar1',
-      //scp: 'scp',
+      tar: 'tar1',
+      scp: 'scp',
       script: 'script',
     }
   },

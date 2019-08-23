@@ -37,13 +37,13 @@ const task = async (done) => {
     d('DONE.');
     done();
   } catch (e) {
-    console.error(e);
     if (!child.killed) {
       // pause and kill script
       //child.stdin.pause();
       //child.stdin.end();
       child.kill();
     }
+    console.error(e);
     done(e);
   }
 };

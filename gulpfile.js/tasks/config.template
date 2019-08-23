@@ -6,16 +6,13 @@ const tarOutput = path.join(cd, 'output.tar');
 module.exports = {
   tasks: {
     'staging': {
-      tar: tar,
-      scp: scp,
-      script: script
+      series: true,
+      tar: 'tar1',
+      scp: 'scp',
+      script: 'script',
     }
   },
-  configs: {
-    tar: 'tar',
-    scp: 'scp',
-  },
-  tar: {
+  tar1: {
     // absolute file path
     output: tarOutput,
 
@@ -25,27 +22,35 @@ module.exports = {
 
       // files to be tar
       files: [
+        'package.json'
       ],
 
       // path pattern to be excluded
       excludes: [
-        'package.json',
-        'ecosystem.config.js',
+        "*.tar"
       ]
     }
   },
 
   scp: {
+    // destination server
+    server: `peterk@myserver.com`,
+
     // absolute file paths to be uploaded
     files: [
       tarOutput,
     ],
 
-    // destination server
-    server: `user@server.com`,
-
     // destination folder on the server
     // make sure the destination directory exists on the server
     dest: '/tmp',
   },
+
+  script: {
+    // destination server
+    server: `peterk@localhost`,
+
+    // commands to be run on the remote server
+    cmds: 'ls -al'
+  }
 }
