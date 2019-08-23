@@ -8,17 +8,14 @@ const _ = require('lodash');
 
 const d = require('debug')('mongo');
 
-const parseArgs = require('../utils/parse_args');
-const cwd = process.cwd(); // console working directory
+const { parseArgs } = require('../../utils/parse-args');
+const { onChildProcessExit } = require('../../utils/on-child-proc-exit');
+
 const cd = __dirname;
 const templateFileName = 'mongo.template.js';
 
 const task = (done) => {
-  const args = parseArgs(process.argv);
-  const { config } = args;
-  const configFile = path.join(cwd, config);
-  const { mongo } = require(configFile);
-  //d(tar);
+  const { mongo } = parseArgs(process.argv);
   const { server, dbhost, adminUser, adminPassword, dbname, addUsers } = mongo;
 
   d(`mongo on ${server} ${dbhost}/${dbname}`);
@@ -34,41 +31,20 @@ const task = (done) => {
     addUsers: (addUsers && addUsers.enabled) ? addUsers.data : [],
   });
   try {
-    /*
-    const child = spawn('ssh', [
-      server,
-      cmdsTxt,
-    ], {
-      cwd,
-    }); */
     const child = spawn(`echo '${shellScript}' | ssh ${server} "cat - > /tmp/nwas-mongo.js && /usr/bin/mongo --nodb /tmp/nwas-mongo.js"`,
       {
         shell: '/bin/bash',
-        stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
+        //stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
+        stdio: [process.stdin, process.stdout, process.stderr]
       });
 
-    // stdout    
-    // 'inherit' causes child.stdout is null
+    await onChildProcessExit(child);
 
-    // stderr
-    child.stderr.on('data', (data) => {
-      // TODO:
-      // DO NOT EXIT PROCESS WHEN THROWING EXCEPTION WHILE INPUT PASSWORD
-      console.error(`! ${data}`);
-      //throw new Error(`${data}`);
-    });
-
-    // event handler
-    child.on('exit', function (code, signal) {
-      if (code === 0) {
-        d('DONE');
-        done();
-      } else {
-        done(new Error('Exit with error code: ' + code));
-      }
-    });
+    d('DONE.');
+    done();
   } catch (e) {
     console.error(e);
+    done(e);
   }
 };
 

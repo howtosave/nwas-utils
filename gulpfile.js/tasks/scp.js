@@ -7,52 +7,43 @@ const { spawn } = require('child_process');
 
 const d = require('debug')('scp');
 
-const parseArgs = require('../utils/parse_args');
+const { parseArgs } = require('../../utils/parse-args');
+const { onChildProcessExit } = require('../../utils/on-child-proc-exit');
 
 const cwd = process.cwd(); // console working directory
 
-const task = (done) => {
-  const args = parseArgs(process.argv);
-  const { config } = args;
-  const configFile = path.join(cwd, config);
-  const { scp } = require(configFile);
-  const { server, dest, files } = scp;
 
-  d(`upload to ${server}:${dest}`);
-  d('files: ', files.join(' '));
-
+const task = async (done) => {
   let child;
   try {
+    const { scp } = parseArgs(process.argv);
+    const { server, dest, files } = scp;
+  
+    d(`upload to ${server}:${dest}`);
+    d('files: ', files.join(' '));
+
     child = spawn('scp', [
       ...files,
       `${server}:${dest}`,
     ], {
       cwd,
-      stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
+      //stdio: ['pipe', 'pipe', 'pipe'] // stdin, stdout, stderr
+      stdio: [process.stdin, process.stdout, process.stderr]
     });
+    // stdout : 'ignore' causes child.stdout is null
 
-    // stdout    
-    // 'inherit' causes child.stdout is null
+    await onChildProcessExit(child);
 
-    // stderr
-    child.stderr.on('data', (data) => {
-      // TODO:
-      // DO NOT EXIT PROCESS WHEN THROWING EXCEPTION
-      throw new Error(`${data}`);
-    });
-
-    child.on('exit', function (code, signal) {
-      d('DONE');
-      done();
-    });
+    d('DONE.');
+    done();
   } catch (e) {
+    console.error(e);
     if (!child.killed) {
       // pause and kill script
-      child.stdin.pause();
+      //child.stdin.pause();
+      //child.stdin.end();
       child.kill();
-      console.log('child killed');
     }
-    //console.error(e);
     done(e);
   }
 };

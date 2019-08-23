@@ -1,20 +1,20 @@
 # NWAS Deploy
 
-## ÀýÂ÷
+## ï¿½ï¿½ï¿½ï¿½
 
-### ·ÎÄÃ ¼­¹ö(LOCAL_SERVER)
+### ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(LOCAL_SERVER)
 
-1. °³¹ß
+1. ï¿½ï¿½ï¿½ï¿½
 2. Unit test
 3. Commit and Push to SRC_REPO
 
-### °³¹ß ¼­¹ö(DEV_SERVER)
+### ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(DEV_SERVER)
 
 1. Pull from SRC_REPO
 2. E2E test
 3. Upload to PROD_SERVER
 
-### ¼­ºñ½º ¼­¹ö(PROD_SERVER)
+### ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(PROD_SERVER)
 
 1. Commit to LOCAL_REPO
 2. pm2-deploy
@@ -30,3 +30,8 @@ yarn add --dev gulp
 # verify
 gulp --version
 ```
+
+## TODO
+
+- handling exit on error
+- gulp-param

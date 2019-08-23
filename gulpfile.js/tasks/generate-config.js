@@ -6,8 +6,6 @@ const fs = require('fs');
 const _ = require('lodash');
 
 const d = require('debug')('generage-config');
-//const parseArgs = require('../utils/parse_args');
-
 const cwd = process.cwd(); // console working directory
 const cd = __dirname; // current directory
 

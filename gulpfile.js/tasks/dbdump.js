@@ -6,16 +6,11 @@ const { spawn } = require('child_process');
 
 const d = require('debug')('dbdump');
 
-const parseArgs = require('../utils/parse_args');
-
-const cwd = process.cwd(); // console working directory
+const { parseArgs } = require('../../utils/parse-args');
+const { onChildProcessExit } = require('../../utils/on-child-proc-exit');
 
 const task = (done) => {
-  const args = parseArgs(process.argv);
-  const { config } = args;
-  const configFile = path.join(cwd, config);
-  const { dbdump } = require(configFile);
-
+  const { dbdump } = parseArgs(process.argv);
   const { server, dbhost, user, password, dbname, collections, outDir } = dbdump;
 
   d(`dbdump on ${server} ${dbhost}/${dbname} ${collections}`);
@@ -33,31 +28,15 @@ const task = (done) => {
     const child = spawn(`echo '${cmd}' | ssh ${server} "cat - > /tmp/nwas-dbdump && /bin/bash /tmp/nwas-dbdump"`,
       {
         shell: '/bin/bash',
-        stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
+        stdio: [process.stdin, process.stdout, process.stderr]
       });
+    await onChildProcessExit(child);
 
-    // stdout    
-    // 'inherit' causes child.stdout is null
-
-    // stderr
-    child.stderr.on('data', (data) => {
-      // TODO:
-      // DO NOT EXIT PROCESS WHEN THROWING EXCEPTION WHILE INPUT PASSWORD
-      console.error(`! ${data}`);
-      //throw new Error(`${data}`);
-    });
-
-    // event handler
-    child.on('exit', function (code, signal) {
-      if (code === 0) {
-        d('DONE');
-        done();
-      } else {
-        done(new Error('Exit with error code: ' + code));
-      }
-    });
+    d('DONE.');
+    done();
   } catch (e) {
     console.error(e);
+    done(e);
   }
 };
 

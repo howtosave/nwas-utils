@@ -1,14 +1,14 @@
 {
-  "name": "nwas-deploy",
+  "name": "nwas-utils",
   "version": "1.0.0",
-  "description": "utils for nwas deploy",
+  "description": "utils for node web application service",
   "main": "index.js",
   "scripts": {
     "start": "node_modules/.bin/gulp --series",
     "parallel": "node_modules/.bin/gulp"
   },
   "bin": {
-    "nwas-deploy": "node_modules/.bin/gulp"
+    "nwas-utils": "node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +18,7 @@
     "gulp": "^4.0.2",
     "gulp-cli": "^2.2.0",
     "lodash": "^4.17.0",
-    "replace-in-file": "^4.1.0"
+    "replace-in-file": "^4.1.0",
+    "yargs": "^14.0.0"
   }
 }

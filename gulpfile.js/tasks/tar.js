@@ -6,26 +6,18 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const d = require('debug')('tar');
-
-const parseArgs = require('../utils/parse_args');
-
-const cwd = process.cwd(); // console working directory
+const { parseArgs, getConfigFile } = require('../../utils/parse-args');
 
 const task = async (done) => {
-  const args = parseArgs(process.argv);
-  //d('argv:', process.argv);
-  //d('args:', args);
-
-  const { config } = args;
-  const configFile = path.join(cwd, config);
-  const { tar } = require(configFile);
-  const { input, output } = tar;
-
-  const workingDir = path.dirname(configFile);
-
-  d('workingDir: ', workingDir);
-
   try {
+    const { tar } = parseArgs(process.argv);
+    const { input, output } = tar;
+  
+    const configFile = getConfigFile();
+    const workingDir = path.dirname(configFile);
+  
+    d('workingDir: ', workingDir);
+  
     const excludes = [];
     if (input.excludes) {
       if (Array.isArray(input.excludes)) {
@@ -58,7 +50,7 @@ const task = async (done) => {
       throw new Error(`${data}`);
     }
 
-    d('DONE!!!', output);
+    d('DONE.', output);
     done();
   } catch (e) {
     console.error(e);

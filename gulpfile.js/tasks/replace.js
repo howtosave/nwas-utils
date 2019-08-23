@@ -5,7 +5,7 @@ const path = require('path');
 const replacer = require('replace-in-file');
 const d = require('debug')('replace');
 
-const parseArgs = require('../utils/parse_args');
+const { parseArgs } = require('../../utils/parse-args');
 
 const cwd = process.cwd(); // console working directory
 

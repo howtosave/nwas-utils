@@ -7,16 +7,11 @@ const fs = require('fs');
 
 const d = require('debug')('dbrestore');
 
-const parseArgs = require('../utils/parse_args');
+const { parseArgs } = require('../../utils/parse-args');
+const { onChildProcessExit } = require('../../utils/on-child-proc-exit');
 
-const cwd = process.cwd(); // console working directory
-
-const task = (done) => {
-  const args = parseArgs(process.argv);
-  const { config } = args;
-  const configFile = path.join(cwd, config);
-  const { dbrestore } = require(configFile);
-
+const task = async (done) => {
+  const { dbrestore } = parseArgs(process.argv);
   const { server, dbhost, user, password, dbname, upsertColls, restoreColls, dropColls, inDir } = dbrestore;
 
   d(`dbrestore on ${server} ${dbhost}/${dbname} ${upsertColls} ${restoreColls}`);
@@ -94,31 +89,15 @@ const task = (done) => {
     const child = spawn(`echo '${cmd}' | ssh ${server} "cat - > /tmp/nwas-dbrestore && /bin/bash /tmp/nwas-dbrestore"`,
       {
         shell: '/bin/bash',
-        stdio: ['pipe', 'inherit', 'pipe'] // stdin, stdout, stderr
+        stdio: [process.stdin, process.stdout, process.stderr]
       });
 
-    // stdout    
-    // 'inherit' causes child.stdout is null
-
-    // stderr
-    child.stderr.on('data', (data) => {
-      // TODO:
-      // DO NOT EXIT PROCESS WHEN THROWING EXCEPTION WHILE INPUT PASSWORD
-      console.error(`! ${data}`);
-      //throw new Error(`${data}`);
-    });
-
-    // event handler
-    child.on('exit', function (code, signal) {
-      if (code === 0) {
-        d('DONE');
-        done();
-      } else {
-        done(new Error('Exit with error code: ' + code));
-      }
-    });
+    await onChildProcessExit(child);
+    d('DONE.');
+    done();
   } catch (e) {
     console.error(e);
+    done(e);
   }
 };
 
