@@ -14,7 +14,7 @@ const { onChildProcessExit } = require('../../utils/on-child-proc-exit');
 const cd = __dirname;
 const templateFileName = 'mongo.template.js';
 
-const task = (done) => {
+const task = async (done) => {
   const { mongo } = parseArgs(process.argv);
   const { server, dbhost, adminUser, adminPassword, dbname, addUsers } = mongo;
 

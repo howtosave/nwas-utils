@@ -32,7 +32,7 @@ const task = async (done) => {
     }
 
     const child = spawn('tar', [
-      '-cvf',
+      '-cf',
       output,
       ...excludes,
       ...input.files,

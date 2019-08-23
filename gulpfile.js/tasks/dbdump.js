@@ -9,7 +9,7 @@ const d = require('debug')('dbdump');
 const { parseArgs } = require('../../utils/parse-args');
 const { onChildProcessExit } = require('../../utils/on-child-proc-exit');
 
-const task = (done) => {
+const task = async (done) => {
   const { dbdump } = parseArgs(process.argv);
   const { server, dbhost, user, password, dbname, collections, outDir } = dbdump;
 
