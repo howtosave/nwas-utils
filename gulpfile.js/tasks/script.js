@@ -9,24 +9,19 @@ const d = require('debug')('script');
 const { parseArgs } = require('../../utils/parse-args');
 const { onChildProcessExit } = require('../../utils/on-child-proc-exit');
 
-const cwd = process.cwd(); // console working directory
-
 const task = async (done) => {
   const { script } = parseArgs(process.argv);
   const { server, cmds } = script;
 
   d(`script on ${server}`);
 
-  //const cmdsTxt = `'cd ${rcwd} && ${cmds.join(' && ')}'`;
-  //d(`${cmds}`);
-
   try {
     /*
     const child = spawn('ssh', [
       server,
-      cmdsTxt,
+      `'cd ${rcwd} && ${cmds.join(' && ')}'`,
     ], {
-      cwd,
+      process.cwd(),
     }); */
     const child = spawn(`echo '${cmds}' | ssh ${server} "cat > /tmp/nwas-script && /bin/bash /tmp/nwas-script"`,
       {

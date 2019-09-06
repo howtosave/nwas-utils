@@ -10,3 +10,4 @@ exports.mongo = require('./tasks/mongo');
 exports.dbdump = require('./tasks/dbdump');
 exports.dbrestore = require('./tasks/dbrestore');
 exports.generateConfig = require('./tasks/generate-config');
+exports.tunnel = require('./tasks/tunnel');
