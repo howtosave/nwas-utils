@@ -1,17 +1,12 @@
 
 const path = require('path');
 
-const _LOCAL = true;
-
-const svcUser = !_LOCAL ? 'jcsvc00' : 'svc00';
-const devUser = !_LOCAL ? 'jcdev00' : 'peterk';
-const remote = !_LOCAL ? '211.218.126.148"' : '127.0.0.1';
+const svcUser = 'svc00';
+const devUser = 'peterk';
+const remote = '127.0.0.1';
 
 const repoDir = `/home/${devUser}/webapp-release`;
-const svcDir = `/var/was//webapp-service`;
-
-const nginxBaseDocDir = `/var/was//webapp-service/current/public`;
-const nginxBaseLogDir = `/var/was//webapp-service/log/nginx`;
+const svcDir = `/var/was/webapp-service`;
 
 const outputFile = 'release-webapp.tar';
 const rootDir = path.join(__dirname, '..');

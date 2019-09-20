@@ -1,26 +1,6 @@
-# NWAS Deploy
+# NWAS Utils
 
-## ����
-
-### ���� ����(LOCAL_SERVER)
-
-1. ����
-2. Unit test
-3. Commit and Push to SRC_REPO
-
-### ���� ����(DEV_SERVER)
-
-1. Pull from SRC_REPO
-2. E2E test
-3. Upload to PROD_SERVER
-
-### ���� ����(PROD_SERVER)
-
-1. Commit to LOCAL_REPO
-2. pm2-deploy
-3. E2E test
-
-## Gulp
+## Setup
 
 ```sh
 # install glup-cli to global
@@ -31,7 +11,13 @@ yarn add --dev gulp
 gulp --version
 ```
 
-## TODO
+## Configuration
 
-- handling exit on error
-- gulp-param
+See [./sample.config.js](./sample.config.js)
+
+## Usage
+
+```sh
+NWAS=/path/to/nwas-utils
+node $NWAS --config /path/to/config-file --task task_name
+```

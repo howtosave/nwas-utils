@@ -1,5 +1,6 @@
 {
   "name": "nwas-utils",
+  "private": true,
   "version": "1.0.0",
   "description": "utils for node web application service",
   "main": "index.js",
