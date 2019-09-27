@@ -14,6 +14,7 @@ const { onChildProcessExit } = require('../../utils/on-child-proc-exit');
 const cd = __dirname;
 const templateFileName = 'mongo.template.js';
 
+// ROOT: db.createUser({user: "myroot", pwd: "root000", "roles": [ { "role": "root", "db": "admin" } ]})
 const task = async (done) => {
   const { mongo } = parseArgs(process.argv);
   const { server, dbhost, adminUser, adminPassword, dbname, addUsers } = mongo;
