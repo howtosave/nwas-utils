@@ -8,43 +8,58 @@ const { spawn } = require('child_process');
 const d = require('debug')('tar');
 const { parseArgs } = require('../../utils/parse-args');
 
+function parseExclude(input) {
+  const excludes = [];
+  if (input.excludes) {
+    if (Array.isArray(input.excludes)) {
+      for (const excl of input.excludes) {
+        excludes.push('--exclude');
+        excludes.push(excl);
+      }
+    } else {
+      excludes.push('--exclude');
+      excludes.push(input.excludes);
+    }
+  }
+  return excludes;
+}
+
+async function doTar(output, curInput, append) {
+  d('workingDir: ', curInput.baseDir);
+
+  let child = spawn('tar', [
+    append ? '-rf' : '-cf',
+    output,
+    ...parseExclude(curInput),
+    ...curInput.files,
+  ], {
+    cwd: curInput.baseDir,
+  });
+
+  // output log
+  for await (const data of child.stdout) {
+    console.log(`${data}`);
+  }
+  // error log
+  for await (const data of child.stderr) {
+    //console.error(`tar error: ${data}`);
+    throw new Error(`${data}`);
+  }
+}
+
 const task = async (done) => {
   try {
     const { tar } = parseArgs(process.argv);
     const { input, output } = tar;
   
-    d('workingDir: ', input.baseDir);
-  
-    const excludes = [];
-    if (input.excludes) {
-      if (Array.isArray(input.excludes)) {
-        for (const excl of input.excludes) {
-          excludes.push('--exclude');
-          excludes.push(excl);
-        }
-      } else {
-        excludes.push('--exclude');
-        excludes.push(input.excludes);
-      }
-    }
+    let inputArr = Array.isArray(input) ? input : [input];
+    
+    // create the tar
+    await doTar(output, inputArr[0], false);
 
-    const child = spawn('tar', [
-      '-cf',
-      output,
-      ...excludes,
-      ...input.files,
-    ], {
-      cwd: input.baseDir,
-    });
-
-    // output log
-    for await (const data of child.stdout) {
-      console.log(`${data}`);
-    }
-    // error log
-    for await (const data of child.stderr) {
-      //console.error(`tar error: ${data}`);
-      throw new Error(`${data}`);
+    // append the rest to the existing tar file.
+    for (let i = 1; i < inputArr.length; i++) {
+      await doTar(output, inputArr[i], true);
     }
 
     d('DONE.', output);
