@@ -9,7 +9,7 @@
     "parallel": "node_modules/.bin/gulp"
   },
   "bin": {
-    "nwas-utils": "node index.js"
+    "nwas-utils": "index.js"
   },
   "author": "",
   "license": "ISC",
