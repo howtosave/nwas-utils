@@ -19,7 +19,7 @@
     "gh-pages": "^2.1.1",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.2.0",
-    "lodash": "^4.17.0",
+    "lodash": "^4.17.21",
     "replace-in-file": "^4.1.0",
     "yargs": "^14.0.0"
   }
